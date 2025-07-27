@@ -1,32 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8" />
-  <title>Redirecionando para o jogo...</title>
+  <meta charset="UTF-8">
+  <title>Redirecionando...</title>
 </head>
 <body>
   <h2>Redirecionando de volta para o jogo...</h2>
-
   <script>
-    // Extrai os parâmetros da URL após o '#'
-    const params = new URLSearchParams(window.location.hash.substring(1));
+    const fragment = window.location.hash.substring(1);
+    const params = new URLSearchParams(fragment);
     const accessToken = params.get("access_token");
 
     if (accessToken) {
-      // Envia o token para o servidor local da Godot
-      fetch("http://localhost:4000/token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token: accessToken })
-      })
-      .then(() => {
-        document.body.innerHTML = "<h2>Login com Google efetuado com sucesso. Você pode voltar para o jogo.</h2>";
-      })
-      .catch(() => {
-        document.body.innerHTML = "<h2>Erro ao comunicar com o jogo. Verifique se o jogo está aberto.</h2>";
-      });
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "http://localhost:4000", true);
+      xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xhr.send(JSON.stringify({ token: accessToken }));
+
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          document.body.innerHTML = "<h2>✅ Login concluído! Você pode fechar esta aba.</h2>";
+        } else {
+          document.body.innerHTML = "<h2>❌ Erro ao comunicar com o jogo. Verifique se o jogo está aberto.</h2>";
+        }
+      };
+
+      xhr.onerror = function () {
+        document.body.innerHTML = "<h2>❌ Erro ao conectar ao jogo. Verifique se ele está aberto.</h2>";
+      };
     } else {
-      document.body.innerHTML = "<h2>Token não encontrado na URL.</h2>";
+      document.body.innerHTML = "<h2>❌ Token de acesso não encontrado.</h2>";
     }
   </script>
 </body>
