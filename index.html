@@ -1,25 +1,33 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Google OAuth Callback</title>
-    <script>
-      const hash = window.location.hash.substr(1);
-      const params = new URLSearchParams(hash);
-      const access_token = params.get("access_token");
+<head>
+  <meta charset="UTF-8" />
+  <title>Redirecionando para o jogo...</title>
+</head>
+<body>
+  <h2>Redirecionando de volta para o jogo...</h2>
 
-      if (access_token) {
-        localStorage.setItem("supabase.auth.token", JSON.stringify({
-          currentSession: { access_token },
-          expiresAt: Date.now() / 1000 + 3600
-        }));
-        window.close();
-      } else {
-        document.body.innerText = "Erro ao obter token.";
-      }
-    </script>
-  </head>
-  <body>
-    <p>Processando login...</p>
-  </body>
+  <script>
+    // Extrai os parâmetros da URL após o '#'
+    const params = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = params.get("access_token");
+
+    if (accessToken) {
+      // Envia o token para o servidor local da Godot
+      fetch("http://localhost:4000/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: accessToken })
+      })
+      .then(() => {
+        document.body.innerHTML = "<h2>Login com Google efetuado com sucesso. Você pode voltar para o jogo.</h2>";
+      })
+      .catch(() => {
+        document.body.innerHTML = "<h2>Erro ao comunicar com o jogo. Verifique se o jogo está aberto.</h2>";
+      });
+    } else {
+      document.body.innerHTML = "<h2>Token não encontrado na URL.</h2>";
+    }
+  </script>
+</body>
 </html>
