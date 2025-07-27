@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Google OAuth Callback</title>
+    <script>
+      const hash = window.location.hash.substr(1);
+      const params = new URLSearchParams(hash);
+      const access_token = params.get("access_token");
+
+      if (access_token) {
+        localStorage.setItem("supabase.auth.token", JSON.stringify({
+          currentSession: { access_token },
+          expiresAt: Date.now() / 1000 + 3600
+        }));
+        window.close();
+      } else {
+        document.body.innerText = "Erro ao obter token.";
+      }
+    </script>
+  </head>
+  <body>
+    <p>Processando login...</p>
+  </body>
+</html>
