@@ -1,35 +1,21 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Redirecionando...</title>
 </head>
 <body>
-  <h2>Redirecionando de volta para o jogo...</h2>
   <script>
-    const fragment = window.location.hash.substring(1);
-    const params = new URLSearchParams(fragment);
-    const accessToken = params.get("access_token");
-
-    if (accessToken) {
+    const token = window.location.hash.match(/access_token=([^&]+)/);
+    if (token && token[1]) {
       const xhr = new XMLHttpRequest();
       xhr.open("POST", "http://localhost:4088", true);
       xhr.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-      xhr.send(JSON.stringify({ token: accessToken }));
+      xhr.send(JSON.stringify({ token: token[1] }));
 
-      xhr.onload = function () {
-        if (xhr.status === 200) {
-          document.body.innerHTML = "<h2>✅ Login concluído! Você pode fechar esta aba.</h2>";
-        } else {
-          document.body.innerHTML = "<h2>❌ Erro ao comunicar com o jogo. Verifique se o jogo está aberto.</h2>";
-        }
-      };
-
-      xhr.onerror = function () {
-        document.body.innerHTML = "<h2>❌ Erro ao conectar ao jogo. Verifique se ele está aberto.</h2>";
-      };
+      document.body.innerHTML = "<h1>Login com Google efetuado! Pode fechar esta janela.</h1>";
     } else {
-      document.body.innerHTML = "<h2>❌ Token de acesso não encontrado.</h2>";
+      document.body.innerHTML = "<h1>❌ Erro ao conectar ao jogo. Verifique se ele está aberto.</h1>";
     }
   </script>
 </body>
